@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Question>
 
 @{
-    ViewData["Title"] = "Questions to me";
+    ViewData["Title"] = "Received Questions";
 }
 
 <h1>Unanswered received questions</h1>
@@ -14,17 +14,18 @@
             Asked by:
             @if (question.AskedFrom is null)
             {
-                <span>annonymous user</span>
+                <span>anonymous user</span>
             }
             else
             {
                 <a href="#">@question.AskedFrom.UserName</a>// TODO: Real href.
             }
+            | at @question.DateTime
         </div>
         <div class="card-body">
             <blockquote class="blockquote mb-0">
                 <p>@question.QuestionText</p>
-                <a class="btn btn-primary" asp-controller="User" asp-action="AnswerQuestion" asp-route-questionId="@question.Id">Answer</a>
+                <a class="btn btn-primary" asp-controller="Questions" asp-action="Answer" asp-route-id="@question.Id">Answer</a>
             </blockquote>
         </div>
     </div>

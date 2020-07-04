@@ -19,7 +19,7 @@ namespace AskQ.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(string username, string questionText, string receivingId)
+        public async Task<IActionResult> PostAsync(string questionText, string receivingId)
         {
             if (string.IsNullOrWhiteSpace(questionText))
             {
@@ -59,7 +59,69 @@ namespace AskQ.Controllers
             {
                 return BadRequest();
             }
-            return View(_dbContext.Questions.Include(q => q.AskedTo).Where(q => q.AskedTo.UserName == User.Identity.Name && !q.Replies.Any()).AsEnumerable());
+            return View(_dbContext.Questions.Include(q => q.AskedTo)
+                .Where(q => q.AskedTo.UserName == User.Identity.Name && !q.Replies.Any())
+                .OrderByDescending(q => q.DateTime)
+                .AsEnumerable());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AnswerAsync(int id)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Forbid();
+            }
+            Question? question = await _dbContext.Questions.Include(q => q.AskedTo).Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
+            if (question == null)
+            {
+                return NotFound();
+            }
+            if (question.AskedTo.UserName != User.Identity.Name)
+            {
+                return Forbid();
+            }
+            if (question.Replies.Any())
+            {
+                return BadRequest();
+            }
+            return View(question);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AnswerAsync(int id, string answerText)
+        {
+            if (string.IsNullOrWhiteSpace(answerText))
+            {
+                return BadRequest();
+            }
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Forbid();
+            }
+            Question? question = await _dbContext.Questions.Include(q => q.AskedTo).Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
+            if (question == null)
+            {
+                return NotFound();
+            }
+            if (question.AskedTo.UserName != User.Identity.Name)
+            {
+                return Forbid();
+            }
+            if (question.Replies.Any())
+            {
+                return BadRequest();
+            }
+            IdentityUser user = await _dbContext.Users.FirstAsync(u => u.UserName == User.Identity.Name);
+            await _dbContext.Replies.AddAsync(new Reply
+            {
+                User = user,
+                Question = question,
+                ReplyText = answerText,
+                DateTime = DateTime.Now
+            });
+            await _dbContext.SaveChangesAsync();
+            return RedirectToAction("UserProfile", "User", new { username = user.UserName });
         }
     }
 }

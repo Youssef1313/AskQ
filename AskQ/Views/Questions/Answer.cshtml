@@ -1,0 +1,36 @@
+﻿@model Question
+
+@{
+    ViewData["Title"] = "Answer";
+}
+
+<h1>Answering question</h1>
+
+<div class="card m-3">
+    <div class="card-header">
+        Asked by:
+        @if (Model.AskedFrom is null)
+        {
+            <span>anonymous user</span>
+        }
+        else
+        {
+            <a href="#">@Model.AskedFrom.UserName</a>// TODO: Real href.
+        }
+    </div>
+    <div class="card-body">
+        <blockquote class="blockquote mb-0">
+            <p>@Model.QuestionText</p>
+            <form asp-controller="Questions" asp-action="Answer" class="mb-3">
+                <div class="form-group">
+                    <label for="AnswerText">Answer:</label>
+                    <textarea class="form-control" id="AnswerText" name="AnswerText" for="AnswerText"></textarea>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Send answer</button>
+                </div>
+                <input type="hidden" name="id" value="@Model.Id" />
+            </form>
+        </blockquote>
+    </div>
+</div>

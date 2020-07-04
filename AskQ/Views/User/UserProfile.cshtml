@@ -42,7 +42,7 @@ else
     foreach (Question question in Model.Questions)
     {
 
-        <div class="card">
+        <div class="card m-3">
             <div class="card-header">
                 Asked by:
                 @if (question.AskedFrom is null)
@@ -53,6 +53,7 @@ else
                 {
                     <a href="#">@question.AskedFrom.UserName</a>// TODO: Real href.
                 }
+                | at @question.DateTime
             </div>
             <div class="card-body">
                 <blockquote class="blockquote mb-0">

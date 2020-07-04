@@ -30,7 +30,13 @@ namespace AskQ.Controllers
             {
                 PageNumber = page,
                 User = user,
-                Questions = _dbContext.Questions.Include(q => q.Replies).Include(q => q.AskedTo).Where(q => q.AskedTo.UserName == username && q.Replies.Any()).Skip(10 * (page - 1)).Take(10).AsEnumerable()
+                Questions = _dbContext.Questions.Include(q => q.Replies)
+                    .Include(q => q.AskedTo)
+                    .Where(q => q.AskedTo.UserName == username && q.Replies.Any())
+                    .Skip(10 * (page - 1))
+                    .Take(10)
+                    .OrderByDescending(q => q.DateTime)
+                    .AsEnumerable()
             };
             return View(viewModel);
         }
