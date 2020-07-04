@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Question>
+
+@{
+    ViewData["Title"] = "Questions to me";
+}
+
+<h1>Unanswered questions</h1>
+
+
+@foreach (Question question in Model)
+{
+    <div>
+        <div>
+            @question.QuestionText
+        </div>
+        <div>
+            @if (question.AskedFrom is null)
+            {
+                <span>From annonymous</span>
+            }
+            else
+            {
+                <a href="#">From @question.AskedFrom.UserName</a> // TODO: Real href.
+            }
+        </div>
+    </div>
+}

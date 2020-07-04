@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AskQ.Data;
 using AskQ.Models;
@@ -22,9 +21,9 @@ namespace AskQ.Controllers
 
         // GET /username
         [HttpGet("{username}")]
-        public IActionResult UserProfile(string username, int page = 1)
+        public async Task<IActionResult> UserProfileAsync(string username, int page = 1)
         {
-            IdentityUser user = _dbContext.Users.FirstOrDefault(u => u.UserName == username);
+            IdentityUser user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user is null)
             {
                 return NotFound();
@@ -33,8 +32,7 @@ namespace AskQ.Controllers
             {
                 PageNumber = page,
                 User = user,
-                // TODO: Skip depending on page.
-                //Questions = _dbContext.Questions.Include(q => q.Replies).Include(q => q.AskedTo).Where(q => q.AskedTo.UserName == username).Take(10).AsEnumerable()
+                Questions = _dbContext.Questions.Include(q => q.Replies).Include(q => q.AskedTo).Where(q => q.AskedTo.UserName == username && q.Replies.Any()).Skip(10 * (page - 1)).Take(10).AsEnumerable()
             };
             return View(viewModel);
         }
@@ -70,7 +68,17 @@ namespace AskQ.Controllers
             await _dbContext.Questions.AddAsync(newQuestion);
             await _dbContext.SaveChangesAsync();
             TempData["Message"] = "Your question has been sent. Questions appear only after they are answered.";
-            return RedirectToAction(nameof(UserProfile), new { username = askedTo.UserName });
+            return RedirectToAction(nameof(UserProfileAsync), new { username = askedTo.UserName });
+        }
+
+        [HttpGet("")]
+        public IActionResult MyQuestions()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return BadRequest();
+            }
+            return View(_dbContext.Questions.Include(q => q.AskedTo).Where(q => q.AskedTo.UserName == User.Identity.Name && !q.Replies.Any()).AsEnumerable());
         }
     }
 }

@@ -33,12 +33,9 @@ else
             <div>
                 @question.QuestionText
             </div>
-            @if (!(question.Replies is null) && question.Replies.FirstOrDefault() is Reply reply)
-            {
-                <div>
-                    @reply.ReplyText
-                </div>
-            }
+            <div>
+                @question.Replies.First().ReplyText
+            </div>
         </div>
     }
 }
