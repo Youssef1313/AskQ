@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AskQ.Data;
+using AskQ.Models;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,10 +39,38 @@ namespace AskQ.Controllers
             return View(viewModel);
         }
 
-       /* [HttpPost]
-        public IActionResult PostQuestion(string username, string question)
+        [HttpPost]
+        public async Task<IActionResult> PostQuestionAsync(string username, string questionText, string receivingId)
         {
+            if (string.IsNullOrWhiteSpace(questionText))
+            {
+                return BadRequest();
+            }
 
-        }*/
+            IdentityUser? askedTo = await _dbContext.Users.FindAsync(receivingId);
+            if (askedTo is null)
+            {
+                return NotFound();
+            }
+
+            IdentityUser? askedFrom = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                askedFrom = await _dbContext.Users.FirstAsync(u => u.UserName == User.Identity.Name);
+            }
+
+            var newQuestion = new Question
+            {
+                AskedTo = askedTo,
+                AskedFrom = askedFrom,
+                QuestionText = questionText,
+                DateTime = DateTime.Now,
+                Replies = Enumerable.Empty<Reply>()
+            };
+            await _dbContext.Questions.AddAsync(newQuestion);
+            await _dbContext.SaveChangesAsync();
+            TempData["Message"] = "Your question has been sent. Questions appear only after they are answered.";
+            return RedirectToAction(nameof(UserProfile), new { username = askedTo.UserName });
+        }
     }
 }

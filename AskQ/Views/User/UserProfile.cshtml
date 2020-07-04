@@ -3,20 +3,27 @@
     ViewData["Title"] = Model.User.UserName;
 }
 
-<h1>User - @Model.User.UserName - Page @Model.PageNumber</h1>
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success" role="alert">@message</div>
+}
 
+<h1>Ask @Model.User.UserName</h1>
 
-<form asp-controller="User" asp-action="PostQuestion">
+<form asp-controller="User" asp-action="PostQuestion" class="mb-3">
     <div class="form-group">
         <label for="QuestionText">Question</label>
-        <textarea class="form-control" for="QuestionText"></textarea>
+        <textarea class="form-control" id="QuestionText" name="QuestionText" for="QuestionText"></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="text-right">
+        <button type="submit" class="btn btn-primary">Send question</button>
+    </div>
+    <input type="hidden" name="receivingId" value="@Model.User.Id" />
 </form>
 
 @if (Model.Questions is null || !Model.Questions.Any())
 {
-    <h2>No questions have been asked to this user. Be the first to ask him!</h2>
+    <div class="alert alert-info" role="alert">No questions have been asked to this user. Be the first to ask him!</div>
 }
 else
 {
