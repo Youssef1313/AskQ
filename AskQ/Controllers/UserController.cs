@@ -71,7 +71,8 @@ namespace AskQ.Controllers
             return RedirectToAction(nameof(UserProfileAsync), new { username = askedTo.UserName });
         }
 
-        [HttpGet("")]
+        // The pattern here is intentional. I want the URL to look like /MyQuestions instead of /User/MyQuestions
+        [HttpGet(nameof(MyQuestions))]
         public IActionResult MyQuestions()
         {
             if (!User.Identity.IsAuthenticated)

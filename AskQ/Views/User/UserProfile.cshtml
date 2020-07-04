@@ -29,12 +29,24 @@ else
 {
     foreach (Question question in Model.Questions)
     {
-        <div>
-            <div>
-                @question.QuestionText
+
+        <div class="card">
+            <div class="card-header">
+                Asked by:
+                @if (question.AskedFrom is null)
+                {
+                    <span>annonymous user</span>
+                }
+                else
+                {
+                    <a href="#">@question.AskedFrom.UserName</a>// TODO: Real href.
+                }
             </div>
-            <div>
-                @question.Replies.First().ReplyText
+            <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                    <p>@question.QuestionText</p>
+                    <footer class="blockquote-footer">@question.Replies.First().ReplyText</footer>
+                </blockquote>
             </div>
         </div>
     }
