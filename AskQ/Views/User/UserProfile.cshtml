@@ -8,22 +8,34 @@
     <div class="alert alert-success" role="alert">@message</div>
 }
 
-<h1>Ask @Model.User.UserName</h1>
+@{bool isOwnProfile = User.Identity.IsAuthenticated && User.Identity.Name == Model.User.UserName; }
 
-<form asp-controller="User" asp-action="PostQuestion" class="mb-3">
-    <div class="form-group">
-        <label for="QuestionText">Question</label>
-        <textarea class="form-control" id="QuestionText" name="QuestionText" for="QuestionText"></textarea>
-    </div>
-    <div class="text-right">
-        <button type="submit" class="btn btn-primary">Send question</button>
-    </div>
-    <input type="hidden" name="receivingId" value="@Model.User.Id" />
-</form>
+@if (!isOwnProfile)
+{
+    <h1>Ask @Model.User.UserName</h1>
+
+    <form asp-controller="Questions" asp-action="Post" class="mb-3">
+        <div class="form-group">
+            <label for="QuestionText">Question</label>
+            <textarea class="form-control" id="QuestionText" name="QuestionText" for="QuestionText"></textarea>
+        </div>
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary">Send question</button>
+        </div>
+        <input type="hidden" name="receivingId" value="@Model.User.Id" />
+    </form>
+}
 
 @if (Model.Questions is null || !Model.Questions.Any())
 {
-    <div class="alert alert-info" role="alert">No questions have been asked to this user. Be the first to ask him!</div>
+    @if (isOwnProfile)
+    {
+        <div class="alert alert-info" role="alert">You don't have any questions.</div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">No questions have been asked to this user. Be the first to ask him!</div>
+    }
 }
 else
 {
