@@ -1,0 +1,37 @@
+﻿@model UserProfileViewModel
+@{
+    ViewData["Title"] = Model.User.UserName;
+}
+
+<h1>User - @Model.User.UserName - Page @Model.PageNumber</h1>
+
+
+<form asp-controller="User" asp-action="PostQuestion">
+    <div class="form-group">
+        <label for="QuestionText">Question</label>
+        <textarea class="form-control" for="QuestionText"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@if (Model.Questions is null || !Model.Questions.Any())
+{
+    <h2>No questions have been asked to this user. Be the first to ask him!</h2>
+}
+else
+{
+    foreach (Question question in Model.Questions)
+    {
+        <div>
+            <div>
+                @question.QuestionText
+            </div>
+            @if (!(question.Replies is null) && question.Replies.FirstOrDefault() is Reply reply)
+            {
+                <div>
+                    @reply.ReplyText
+                </div>
+            }
+        </div>
+    }
+}
