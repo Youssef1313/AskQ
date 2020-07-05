@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace AskQ.Models
+namespace AskQ.Core.Models
 {
     public class Question
     {
