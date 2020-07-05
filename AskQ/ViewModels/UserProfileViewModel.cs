@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AskQ.Models;
+using AskQ.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace AskQ.ViewModels

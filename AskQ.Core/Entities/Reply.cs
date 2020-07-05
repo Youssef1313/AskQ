@@ -1,14 +1,13 @@
 ﻿using System;
-using Microsoft.AspNetCore.Identity;
 
-namespace AskQ.Models
+namespace AskQ.Core.Entities
 {
     public class Reply
     {
         public int Id { get; set; }
         public Question Question { get; set; } = null!;
         public string ReplyText { get; set; } = null!;
-        public IdentityUser? User { get; set; } // Nullable because I'm allowing annonymous.
+        public string? UserGuid { get; set; } // Nullable because I'm allowing annonymous.
         public DateTime DateTime { get; set; }
     }
 }
