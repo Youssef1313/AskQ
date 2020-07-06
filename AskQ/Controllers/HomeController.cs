@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using AskQ.Models;
+using AskQ.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

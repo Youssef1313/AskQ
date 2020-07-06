@@ -9,13 +9,13 @@
 <div class="card m-3">
     <div class="card-header">
         Asked by:
-        @if (Model.AskedFrom is null)
+        @if (Model.AskedFromGuid is null)
         {
             <span>anonymous user</span>
         }
         else
         {
-            <a href="#">@Model.AskedFrom.UserName</a>// TODO: Real href.
+            <a href="#">@Model.AskedFrom.UserName</a> // TODO: Real href.
         }
     </div>
     <div class="card-body">
