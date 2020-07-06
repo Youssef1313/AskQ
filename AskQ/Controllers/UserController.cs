@@ -32,27 +32,35 @@ namespace AskQ.Controllers
                 return NotFound();
             }
 
-            IEnumerable<QuestionViewModel> questions = _dbContext.Questions.Include(q => q.Replies)
-                    .Where(q => q.AskedToGuid == user.Id && q.Replies.Any())
-                    .Skip(10 * (page - 1))
-                    .Take(10)
-                    .OrderByDescending(q => q.DateTime)
-                    .Select(q => new QuestionViewModel
-                    {
-                        Id = q.Id,
-                        QuestionText = q.QuestionText,
-                        AskedFromUsername = (_userManager.FindByIdAsync(q.AskedFromGuid)).Result.UserName,
-                        DateTime = q.DateTime,
-                        Replies = q.Replies.Select(r => r.ReplyText)
-                    }).AsEnumerable(); // Looks too long.
-                                       // There could be a better approach to populate IEnumerable<QuestionViewModel> from the IEnumerable<Question>;
+
+            // We'll keep it for now like this, but there are issues generally.
+            var questions = await _dbContext.Questions
+                                            .Include(q => q.Replies)
+                                            .Where(q => q.AskedToGuid == user.Id && q.Replies.Any()) // This query will be processed in memory. All records will be retrieved from DB.
+                                            .Skip(10 * (page - 1))
+                                            .Take(10)
+                                            .OrderByDescending(q => q.DateTime)
+                                            .ToListAsync();
+
+            var questionsViewModel = new List<QuestionViewModel>();
+            foreach (var question in questions)
+            {
+                questionsViewModel.Add(new QuestionViewModel()
+                {
+                    Id = question.Id,
+                    QuestionText = question.QuestionText,
+                    AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
+                    DateTime = question.DateTime,
+                    Replies = question.Replies.Select(r => r.ReplyText)
+                });
+            }
 
             var viewModel = new UserProfileViewModel
             {
                 PageNumber = page,
                 Username = username,
                 UserId = user.Id,
-                Questions = questions
+                Questions = questionsViewModel.AsEnumerable()
             };
             return View(viewModel);
         }
