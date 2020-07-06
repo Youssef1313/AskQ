@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Core.Entities;
 using AskQ.Data;
+using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -60,10 +62,24 @@ namespace AskQ.Controllers
                 return BadRequest();
             }
             string authenticatedUserGuid = (await _userManager.GetUserAsync(User)).Id;
-            return View(_dbContext.Questions
+
+            List<Question> questions = await _dbContext.Questions
                 .Where(q => q.AskedToGuid == authenticatedUserGuid && !q.Replies.Any())
-                .OrderByDescending(q => q.DateTime)
-                .AsEnumerable());
+                .OrderByDescending(q => q.DateTime).ToListAsync();
+
+            var questionsViewModel = new List<QuestionViewModel>();
+            foreach (Question question in questions)
+            {
+                questionsViewModel.Add(new QuestionViewModel
+                {
+                    Id = question.Id,
+                    QuestionText = question.QuestionText,
+                    AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
+                    DateTime = question.DateTime,
+                });
+            }
+
+            return View(questionsViewModel.AsEnumerable());
         }
 
         [HttpGet]
@@ -86,7 +102,13 @@ namespace AskQ.Controllers
             {
                 return BadRequest();
             }
-            return View(question);
+            return View(new QuestionViewModel
+            {
+                Id = question.Id,
+                QuestionText = question.QuestionText,
+                AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
+                DateTime = question.DateTime,
+            });
         }
 
         [HttpPost]

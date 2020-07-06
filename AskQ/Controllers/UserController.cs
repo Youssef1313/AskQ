@@ -34,7 +34,7 @@ namespace AskQ.Controllers
 
 
             // We'll keep it for now like this, but there are issues generally.
-            var questions = await _dbContext.Questions
+            List<Question> questions = await _dbContext.Questions
                                             .Include(q => q.Replies)
                                             .Where(q => q.AskedToGuid == user.Id && q.Replies.Any()) // This query will be processed in memory. All records will be retrieved from DB.
                                             .Skip(10 * (page - 1))
@@ -43,9 +43,9 @@ namespace AskQ.Controllers
                                             .ToListAsync();
 
             var questionsViewModel = new List<QuestionViewModel>();
-            foreach (var question in questions)
+            foreach (Question question in questions)
             {
-                questionsViewModel.Add(new QuestionViewModel()
+                questionsViewModel.Add(new QuestionViewModel
                 {
                     Id = question.Id,
                     QuestionText = question.QuestionText,
