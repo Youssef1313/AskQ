@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AskQ.Core.Entities;
 using AskQ.Data;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -28,17 +31,28 @@ namespace AskQ.Controllers
             {
                 return NotFound();
             }
+
+            IEnumerable<QuestionViewModel> questions = _dbContext.Questions.Include(q => q.Replies)
+                    .Where(q => q.AskedToGuid == user.Id && q.Replies.Any())
+                    .Skip(10 * (page - 1))
+                    .Take(10)
+                    .OrderByDescending(q => q.DateTime)
+                    .Select(q => new QuestionViewModel
+                    {
+                        Id = q.Id,
+                        QuestionText = q.QuestionText,
+                        AskedFromUsername = (_userManager.FindByIdAsync(q.AskedFromGuid)).Result.UserName,
+                        DateTime = q.DateTime,
+                        Replies = q.Replies.Select(r => r.ReplyText)
+                    }).AsEnumerable(); // Looks too long.
+                                       // There could be a better approach to populate IEnumerable<QuestionViewModel> from the IEnumerable<Question>;
+
             var viewModel = new UserProfileViewModel
             {
                 PageNumber = page,
                 Username = username,
                 UserId = user.Id,
-                Questions = _dbContext.Questions.Include(q => q.Replies)
-                    .Where(q => q.AskedToGuid == user.Id && q.Replies.Any())
-                    .Skip(10 * (page - 1))
-                    .Take(10)
-                    .OrderByDescending(q => q.DateTime)
-                    .AsEnumerable()
+                Questions = questions
             };
             return View(viewModel);
         }

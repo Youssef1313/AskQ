@@ -39,26 +39,25 @@
 }
 else
 {
-    foreach (Question question in Model.Questions)
+    foreach (QuestionViewModel question in Model.Questions)
     {
-
         <div class="card m-3">
             <div class="card-header">
                 Asked by:
-                @if (question.AskedFromGuid is null)
+                @if (question.AskedFromUsername is null)
                 {
                     <span>annonymous user</span>
                 }
                 else
                 {
-                    <a href="#">@question.AskedFrom.UserName</a> // TODO: Real href.
+                    <a href="#">@question.AskedFromUsername</a> // TODO: Real href.
                 }
                 | at @question.DateTime
             </div>
             <div class="card-body">
                 <blockquote class="blockquote mb-0">
                     <p>@question.QuestionText</p>
-                    <footer class="blockquote-footer">@question.Replies.First().ReplyText</footer>
+                    <footer class="blockquote-footer">@question.Replies.First()</footer>
                 </blockquote>
             </div>
         </div>
