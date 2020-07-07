@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Question>
+﻿@model IEnumerable<QuestionViewModel>
 
 @{
     ViewData["Title"] = "Received Questions";
@@ -7,18 +7,18 @@
 <h1>Unanswered received questions</h1>
 
 
-@foreach (Question question in Model)
+@foreach (QuestionViewModel question in Model)
 {
     <div class="card m-3">
         <div class="card-header">
             Asked by:
-            @if (question.AskedFrom is null)
+            @if (question.AskedFromUsername is null)
             {
                 <span>anonymous user</span>
             }
             else
             {
-                <a href="#">@question.AskedFrom.UserName</a>// TODO: Real href.
+                <a href="#">@question.AskedFromUsername</a>// TODO: Real href.
             }
             | at @question.DateTime
         </div>

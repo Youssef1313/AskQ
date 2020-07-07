@@ -1,4 +1,4 @@
-﻿@model Question
+﻿@model QuestionViewModel
 
 @{
     ViewData["Title"] = "Answer";
@@ -9,14 +9,15 @@
 <div class="card m-3">
     <div class="card-header">
         Asked by:
-        @if (Model.AskedFrom is null)
+        @if (Model.AskedFromUsername is null)
         {
             <span>anonymous user</span>
         }
         else
         {
-            <a href="#">@Model.AskedFrom.UserName</a>// TODO: Real href.
+            <a href="#">@Model.AskedFromUsername</a>// TODO: Real href.
         }
+        | at @Model.DateTime
     </div>
     <div class="card-body">
         <blockquote class="blockquote mb-0">

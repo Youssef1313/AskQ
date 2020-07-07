@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AskQ.Core.Entities;
 using AskQ.Data;
-using AskQ.Models;
+using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +14,14 @@ namespace AskQ.Controllers
     public class QuestionsController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public QuestionsController(ApplicationDbContext dbContext)
+        public QuestionsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost]
@@ -26,24 +32,20 @@ namespace AskQ.Controllers
                 return BadRequest();
             }
 
-            IdentityUser? askedTo = await _dbContext.Users.FindAsync(receivingId);
+            IdentityUser? askedTo = await _userManager.FindByIdAsync(receivingId);
             if (askedTo is null)
             {
                 return NotFound();
             }
 
-            IdentityUser? askedFrom = null;
-            if (User.Identity.IsAuthenticated)
-            {
-                askedFrom = await _dbContext.Users.FirstAsync(u => u.UserName == User.Identity.Name);
-            }
+            string? askedFromGuid = (await _userManager.GetUserAsync(User))?.Id;
 
             var newQuestion = new Question
             {
-                AskedTo = askedTo,
-                AskedFrom = askedFrom,
+                AskedToGuid = receivingId,
+                AskedFromGuid = askedFromGuid,
                 QuestionText = questionText,
-                DateTime = DateTime.Now,
+                DateTime = DateTime.UtcNow,
                 Replies = Enumerable.Empty<Reply>()
             };
             await _dbContext.Questions.AddAsync(newQuestion);
@@ -53,16 +55,31 @@ namespace AskQ.Controllers
         }
 
         [HttpGet]
-        public IActionResult Received()
+        public async Task<IActionResult> ReceivedAsync()
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return BadRequest();
             }
-            return View(_dbContext.Questions.Include(q => q.AskedTo)
-                .Where(q => q.AskedTo.UserName == User.Identity.Name && !q.Replies.Any())
-                .OrderByDescending(q => q.DateTime)
-                .AsEnumerable());
+            string authenticatedUserGuid = (await _userManager.GetUserAsync(User)).Id;
+
+            List<Question> questions = await _dbContext.Questions
+                .Where(q => q.AskedToGuid == authenticatedUserGuid && !q.Replies.Any())
+                .OrderByDescending(q => q.DateTime).ToListAsync();
+
+            var questionsViewModel = new List<QuestionViewModel>();
+            foreach (Question question in questions)
+            {
+                questionsViewModel.Add(new QuestionViewModel
+                {
+                    Id = question.Id,
+                    QuestionText = question.QuestionText,
+                    AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
+                    DateTime = question.DateTime,
+                });
+            }
+
+            return View(questionsViewModel.AsEnumerable());
         }
 
         [HttpGet]
@@ -72,12 +89,12 @@ namespace AskQ.Controllers
             {
                 return Forbid();
             }
-            Question? question = await _dbContext.Questions.Include(q => q.AskedTo).Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
+            Question? question = await _dbContext.Questions.Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return NotFound();
             }
-            if (question.AskedTo.UserName != User.Identity.Name)
+            if (question.AskedToGuid != (await _userManager.GetUserAsync(User)).Id)
             {
                 return Forbid();
             }
@@ -85,7 +102,13 @@ namespace AskQ.Controllers
             {
                 return BadRequest();
             }
-            return View(question);
+            return View(new QuestionViewModel
+            {
+                Id = question.Id,
+                QuestionText = question.QuestionText,
+                AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
+                DateTime = question.DateTime,
+            });
         }
 
         [HttpPost]
@@ -99,12 +122,13 @@ namespace AskQ.Controllers
             {
                 return Forbid();
             }
-            Question? question = await _dbContext.Questions.Include(q => q.AskedTo).Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
+            Question? question = await _dbContext.Questions.Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return NotFound();
             }
-            if (question.AskedTo.UserName != User.Identity.Name)
+
+            if (question.AskedToGuid != (await _userManager.GetUserAsync(User)).Id)
             {
                 return Forbid();
             }
@@ -112,16 +136,16 @@ namespace AskQ.Controllers
             {
                 return BadRequest();
             }
-            IdentityUser user = await _dbContext.Users.FirstAsync(u => u.UserName == User.Identity.Name);
+
             await _dbContext.Replies.AddAsync(new Reply
             {
-                User = user,
+                UserGuid = question.AskedToGuid,
                 Question = question,
                 ReplyText = answerText,
-                DateTime = DateTime.Now
+                DateTime = DateTime.UtcNow
             });
             await _dbContext.SaveChangesAsync();
-            return RedirectToAction("UserProfile", "User", new { username = user.UserName });
+            return RedirectToAction("UserProfile", "User", new { username = User.Identity.Name });
         }
     }
 }

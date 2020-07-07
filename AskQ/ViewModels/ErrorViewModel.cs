@@ -1,4 +1,4 @@
-namespace AskQ.Models
+namespace AskQ.ViewModels
 {
     public class ErrorViewModel
     {

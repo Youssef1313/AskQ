@@ -1,6 +1,6 @@
 ﻿@model UserProfileViewModel
 @{
-    ViewData["Title"] = Model.User.UserName;
+    ViewData["Title"] = Model.Username;
 }
 
 @if (TempData["Message"] is string message)
@@ -8,11 +8,11 @@
     <div class="alert alert-success" role="alert">@message</div>
 }
 
-@{bool isOwnProfile = User.Identity.IsAuthenticated && User.Identity.Name == Model.User.UserName; }
+@{bool isOwnProfile = User.Identity.IsAuthenticated && User.Identity.Name == Model.Username; }
 
 @if (!isOwnProfile)
 {
-    <h1>Ask @Model.User.UserName</h1>
+    <h1>Ask @Model.Username</h1>
 
     <form asp-controller="Questions" asp-action="Post" class="mb-3">
         <div class="form-group">
@@ -22,7 +22,7 @@
         <div class="text-right">
             <button type="submit" class="btn btn-primary">Send question</button>
         </div>
-        <input type="hidden" name="receivingId" value="@Model.User.Id" />
+        <input type="hidden" name="receivingId" value="@Model.UserId" />
     </form>
 }
 
@@ -39,26 +39,25 @@
 }
 else
 {
-    foreach (Question question in Model.Questions)
+    foreach (QuestionViewModel question in Model.Questions)
     {
-
         <div class="card m-3">
             <div class="card-header">
                 Asked by:
-                @if (question.AskedFrom is null)
+                @if (question.AskedFromUsername is null)
                 {
                     <span>annonymous user</span>
                 }
                 else
                 {
-                    <a href="#">@question.AskedFrom.UserName</a>// TODO: Real href.
+                    <a href="#">@question.AskedFromUsername</a> // TODO: Real href.
                 }
                 | at @question.DateTime
             </div>
             <div class="card-body">
                 <blockquote class="blockquote mb-0">
                     <p>@question.QuestionText</p>
-                    <footer class="blockquote-footer">@question.Replies.First().ReplyText</footer>
+                    <footer class="blockquote-footer">@question.Replies.First()</footer>
                 </blockquote>
             </div>
         </div>
