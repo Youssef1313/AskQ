@@ -7,7 +7,7 @@ namespace AskQ.ViewModels
     {
         public int Id { get; set; }
         public string? AskedFromUsername { get; set; }
-        public string QuestionText { get; set; } = null!;
+        public string? QuestionText { get; set; }
         public DateTime DateTime { get; set; }
         public IEnumerable<string>? Replies { get; set; }
     }

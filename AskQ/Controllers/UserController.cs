@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AskQ.Core.Entities;
 using AskQ.Infrastructure.Data;
 using AskQ.Infrastructure.Identity;
+using AskQ.Interfaces;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,13 @@ namespace AskQ.Controllers
 {
     public class UserController : Controller
     {
-        private readonly AppIdentityDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IQuestionService _questionService;
 
-        public UserController(AppIdentityDbContext dbContext, UserManager<IdentityUser> userManager)
+        public UserController(UserManager<IdentityUser> userManager,
+                              IQuestionService questionService)
         {
-            _dbContext = dbContext;
+            _questionService = questionService;
             _userManager = userManager;
         }
 
@@ -33,35 +35,14 @@ namespace AskQ.Controllers
                 return NotFound();
             }
 
-
-            // We'll keep it for now like this, but there are issues generally.
-            List<Question> questions = await _dbContext.Questions
-                                            .Include(q => q.Replies)
-                                            .Where(q => q.AskedToGuid == user.Id && q.Replies.Any()) // This query will be processed in memory. All records will be retrieved from DB.
-                                            .Skip(10 * (page - 1))
-                                            .Take(10)
-                                            .OrderByDescending(q => q.DateTime)
-                                            .ToListAsync();
-
-            var questionsViewModel = new List<QuestionViewModel>();
-            foreach (Question question in questions)
-            {
-                questionsViewModel.Add(new QuestionViewModel
-                {
-                    Id = question.Id,
-                    QuestionText = question.Text,
-                    AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
-                    DateTime = question.Date,
-                    Replies = question.Replies.Select(r => r.Text)
-                });
-            }
+            var questions = await _questionService.GetQuestionsForUserAsync(user.Id, page, 10);
 
             var viewModel = new UserProfileViewModel
             {
                 PageNumber = page,
                 Username = username,
                 UserId = user.Id,
-                Questions = questionsViewModel.AsEnumerable()
+                Questions = questions.AsEnumerable()
             };
             return View(viewModel);
         }
