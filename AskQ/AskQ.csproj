@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AskQ.Core\AskQ.Core.csproj" />
+    <ProjectReference Include="..\AskQ.Infrastructure\AskQ.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

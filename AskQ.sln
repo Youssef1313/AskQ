@@ -10,7 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AskQ.Core", "AskQ.Core\AskQ.Core.csproj", "{DF1A6211-3F27-42A2-AD03-B8EF2F04D3C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AskQ.Core", "AskQ.Core\AskQ.Core.csproj", "{DF1A6211-3F27-42A2-AD03-B8EF2F04D3C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AskQ.Infrastructure", "AskQ.Infrastructure\AskQ.Infrastructure.csproj", "{17E5C4FC-DEDE-4992-9DD1-10F91B91DC4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{DF1A6211-3F27-42A2-AD03-B8EF2F04D3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF1A6211-3F27-42A2-AD03-B8EF2F04D3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF1A6211-3F27-42A2-AD03-B8EF2F04D3C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17E5C4FC-DEDE-4992-9DD1-10F91B91DC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17E5C4FC-DEDE-4992-9DD1-10F91B91DC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17E5C4FC-DEDE-4992-9DD1-10F91B91DC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17E5C4FC-DEDE-4992-9DD1-10F91B91DC4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

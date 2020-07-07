@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace AskQ.Data.Migrations
+namespace AskQ.Infrastructure.Data.Migrations
 {
     public partial class InitialModels : Migration
     {
