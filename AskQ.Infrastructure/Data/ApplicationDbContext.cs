@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AskQ.Data
+namespace AskQ.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
