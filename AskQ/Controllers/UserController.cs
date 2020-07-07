@@ -1,24 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using AskQ.Core.Entities;
-using AskQ.Infrastructure.Data;
 using AskQ.Infrastructure.Identity;
 using AskQ.Interfaces;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AskQ.Controllers
 {
     public class UserController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IQuestionService _questionService;
 
-        public UserController(UserManager<IdentityUser> userManager,
+        public UserController(UserManager<ApplicationUser> userManager,
                               IQuestionService questionService)
         {
             _questionService = questionService;

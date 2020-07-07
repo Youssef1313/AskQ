@@ -23,7 +23,7 @@ namespace AskQ.Services
 
         public async Task<QuestionViewModel> GetQuestionAsync(int questionId)
         {
-            var question = await _dbContext.Questions
+            Question? question = await _dbContext.Questions
                                             .Include(q => q.Replies)
                                             .FirstOrDefaultAsync(q => q.Id == questionId);
 
@@ -72,7 +72,7 @@ namespace AskQ.Services
 
         public async Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser toUser)
         {
-            var question = await _dbContext.Questions
+            Question? question = await _dbContext.Questions
                                             .Include(q => q.Replies)
                                             .FirstOrDefaultAsync(q => q.Id == questionId);
 

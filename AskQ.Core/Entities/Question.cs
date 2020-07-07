@@ -19,29 +19,32 @@ namespace AskQ.Core.Entities
         public IEnumerable<Reply> Replies => _replies.AsEnumerable();
         private readonly List<Reply> _replies = new List<Reply>();
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         private Question()
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
             // Parameterless constructor is required by EF. Will make it private.
         }
+
         public Question(string text, string askedToUserId, string askedToUsername, string? askedFromUserId = null, string? askedFromUsername = null)
         {
             PozValidate.For.NullOrEmpty(text, nameof(text));
             PozValidate.For.NullOrEmpty(askedToUserId, nameof(askedToUserId));
             PozValidate.For.NullOrEmpty(askedToUsername, nameof(askedToUsername));
 
-            this.Text = text;
-            this.AskedToUserId = askedToUserId;
-            this.AskedToUsername = askedToUsername;
-            this.AskedFromUserId = askedFromUserId;
-            this.AskedFromUsername = askedFromUsername;
+            Text = text;
+            AskedToUserId = askedToUserId;
+            AskedToUsername = askedToUsername;
+            AskedFromUserId = askedFromUserId;
+            AskedFromUsername = askedFromUsername;
 
-            this.Date = DateTime.Now;
+            Date = DateTime.UtcNow;
             HasReplies = false;
         }
 
         public Reply GetReply(int replyId)
         {
-            var reply = Replies.FirstOrDefault(x => x.Id == replyId);
+            Reply? reply = Replies.FirstOrDefault(x => x.Id == replyId);
             PozValidate.For.NotFound(replyId, reply, nameof(reply));
 
             return reply;
@@ -52,17 +55,17 @@ namespace AskQ.Core.Entities
             PozValidate.For.Null(reply, nameof(reply));
 
             _replies.Add(reply);
-            this.HasReplies = true;
+            HasReplies = true;
 
             return reply;
         }
 
         public void DeleteReply(int replyId)
         {
-            var reply = GetReply(replyId);
+            Reply reply = GetReply(replyId);
             _replies.Remove(reply);
 
-            if (!this.Replies.Any())
+            if (!Replies.Any())
             {
                 HasReplies = false;
             }

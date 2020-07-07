@@ -11,20 +11,23 @@ namespace AskQ.Core.Entities
         public string? UserName { get; private set; }
         public DateTime Date { get; private set; }
 
-        public int QuestionId { get; private set; }
-        public Question? Question { get; private set; }
+        public int QuestionId { get; private set; } // TODO: This is unused.
+        public Question? Question { get; private set; } // TODO: This is unused.
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         private Reply()
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         {
             // Parameterless constructor is required by EF. Will make it private.
         }
+
         public Reply(string text, string? userId, string? username)
         {
             PozValidate.For.NullOrEmpty(text, nameof(text));
 
-            this.Text = text;
-            this.UserId = userId;
-            this.UserName = username;
+            Text = text;
+            UserId = userId;
+            UserName = username;
         }
     }
 }

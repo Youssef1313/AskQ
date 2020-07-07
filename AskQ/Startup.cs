@@ -1,5 +1,7 @@
 using AskQ.Infrastructure.Data;
 using AskQ.Infrastructure.Identity;
+using AskQ.Interfaces;
+using AskQ.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,8 @@ namespace AskQ
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppIdentityDbContext>();
+
+            services.AddScoped<IQuestionService, QuestionService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

@@ -15,19 +15,16 @@ namespace AskQ.Controllers
 {
     public class QuestionsController : Controller
     {
-        private readonly AppIdentityDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IQuestionService _questionService;
 
-        public QuestionsController(AppIdentityDbContext dbContext,
+        public QuestionsController(AppDbContext dbContext,
                                    UserManager<ApplicationUser> userManager,
-                                   SignInManager<ApplicationUser> signInManager,
                                    IQuestionService questionService)
         {
             _dbContext = dbContext;
             _userManager = userManager;
-            _signInManager = signInManager;
             _questionService = questionService;
         }
 
@@ -63,7 +60,7 @@ namespace AskQ.Controllers
 
             string authenticatedUserId = (await _userManager.GetUserAsync(User)).Id;
 
-            var questions = await _questionService.GetQuestionsForUserAsync(authenticatedUserId);
+            List<QuestionViewModel> questions = await _questionService.GetQuestionsForUserAsync(authenticatedUserId);
 
             return View(questions.AsEnumerable());
         }
@@ -80,7 +77,7 @@ namespace AskQ.Controllers
             {
                 return NotFound();
             }
-            if (question.AskedToGuid != (await _userManager.GetUserAsync(User)).Id)
+            if (question.AskedToUserId != (await _userManager.GetUserAsync(User)).Id)
             {
                 return Forbid();
             }
@@ -92,7 +89,7 @@ namespace AskQ.Controllers
             {
                 Id = question.Id,
                 QuestionText = question.Text,
-                AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
+                AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromUserId))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
                 DateTime = question.Date,
             });
         }
@@ -114,7 +111,7 @@ namespace AskQ.Controllers
                 return NotFound();
             }
 
-            if (question.AskedToGuid != (await _userManager.GetUserAsync(User)).Id)
+            if (question.AskedToUserId != (await _userManager.GetUserAsync(User)).Id)
             {
                 return Forbid();
             }
@@ -123,14 +120,16 @@ namespace AskQ.Controllers
                 return BadRequest();
             }
 
-            await _dbContext.Replies.AddAsync(new Reply
+            /*await _dbContext.Replies.AddAsync(new Reply
             {
                 UserId = question.AskedToGuid,
                 Question = question,
                 Text = answerText,
                 Date = DateTime.UtcNow
             });
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();*/
+            // TODO: ReplyService.
+
             return RedirectToAction("UserProfile", "User", new { username = User.Identity.Name });
         }
     }
