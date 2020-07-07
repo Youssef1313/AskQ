@@ -142,7 +142,7 @@ namespace AskQ.Controllers
                 UserGuid = question.AskedToGuid,
                 Question = question,
                 ReplyText = answerText,
-                DateTime = DateTime.Now
+                DateTime = DateTime.UtcNow
             });
             await _dbContext.SaveChangesAsync();
             return RedirectToAction("UserProfile", "User", new { username = User.Identity.Name });
