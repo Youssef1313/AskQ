@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Core.Entities;
 using AskQ.Infrastructure.Data;
+using AskQ.Infrastructure.Identity;
 using AskQ.Interfaces;
 using AskQ.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using PozitronDev.Validations;
 
 namespace AskQ.Services
 {
@@ -46,6 +48,17 @@ namespace AskQ.Services
             }
 
             return questionsViewModel;
+        }
+
+        public async Task CreateQuestionAsync(string text, ApplicationUser toUser, ApplicationUser? fromUser)
+        {
+            PozValidate.For.NullOrEmpty(text, nameof(text));
+            PozValidate.For.Null(toUser, nameof(toUser));
+
+            var newQuestion = new Question(text, toUser.Id, toUser.UserName, fromUser?.Id, fromUser?.UserName);
+
+            await _dbContext.Questions.AddAsync(newQuestion);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

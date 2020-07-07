@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AskQ.Core.Entities;
 using AskQ.Infrastructure.Data;
 using AskQ.Infrastructure.Identity;
+using AskQ.Interfaces;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +16,19 @@ namespace AskQ.Controllers
     public class QuestionsController : Controller
     {
         private readonly AppIdentityDbContext _dbContext;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IQuestionService _questionService;
 
-        public QuestionsController(AppIdentityDbContext dbContext, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public QuestionsController(AppIdentityDbContext dbContext,
+                                   UserManager<ApplicationUser> userManager,
+                                   SignInManager<ApplicationUser> signInManager,
+                                   IQuestionService questionService)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _signInManager = signInManager;
+            _questionService = questionService;
         }
 
         [HttpPost]
@@ -33,26 +39,18 @@ namespace AskQ.Controllers
                 return BadRequest();
             }
 
-            IdentityUser? askedTo = await _userManager.FindByIdAsync(receivingId);
-            if (askedTo is null)
+            ApplicationUser? askedToUser = await _userManager.FindByIdAsync(receivingId);
+            if (askedToUser is null)
             {
                 return NotFound();
             }
 
-            string? askedFromGuid = (await _userManager.GetUserAsync(User))?.Id;
+            ApplicationUser askedFromUser = await _userManager.GetUserAsync(User);
 
-            var newQuestion = new Question
-            {
-                AskedToGuid = receivingId,
-                AskedFromGuid = askedFromGuid,
-                Text = questionText,
-                DateTime = DateTime.UtcNow,
-                Replies = Enumerable.Empty<Reply>()
-            };
-            await _dbContext.Questions.AddAsync(newQuestion);
-            await _dbContext.SaveChangesAsync();
+            await _questionService.CreateQuestionAsync(questionText, askedToUser, askedFromUser);
+
             TempData["Message"] = "Your question has been sent. Questions appear only after they are answered.";
-            return RedirectToAction("UserProfile", "User", new { username = askedTo.UserName });
+            return RedirectToAction("UserProfile", "User", new { username = askedToUser.UserName });
         }
 
         [HttpGet]
