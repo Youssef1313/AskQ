@@ -60,25 +60,12 @@ namespace AskQ.Controllers
             {
                 return BadRequest();
             }
-            string authenticatedUserGuid = (await _userManager.GetUserAsync(User)).Id;
 
-            List<Question> questions = await _dbContext.Questions
-                .Where(q => q.AskedToGuid == authenticatedUserGuid && !q.Replies.Any())
-                .OrderByDescending(q => q.DateTime).ToListAsync();
+            string authenticatedUserId = (await _userManager.GetUserAsync(User)).Id;
 
-            var questionsViewModel = new List<QuestionViewModel>();
-            foreach (Question question in questions)
-            {
-                questionsViewModel.Add(new QuestionViewModel
-                {
-                    Id = question.Id,
-                    QuestionText = question.Text,
-                    AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
-                    DateTime = question.Date,
-                });
-            }
+            var questions = await _questionService.GetQuestionsForUserAsync(authenticatedUserId);
 
-            return View(questionsViewModel.AsEnumerable());
+            return View(questions.AsEnumerable());
         }
 
         [HttpGet]

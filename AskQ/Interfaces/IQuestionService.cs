@@ -7,7 +7,10 @@ namespace AskQ.Interfaces
 {
     public interface IQuestionService
     {
-        Task CreateQuestionAsync(string text, ApplicationUser toUser, ApplicationUser? fromUser);
+        Task<QuestionViewModel> GetQuestionAsync(int questionId);
+        Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId);
         Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, int page, int pagesize);
+        Task CreateQuestionAsync(string text, ApplicationUser toUser, ApplicationUser? fromUser);
+        Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser toUser);
     }
 }
