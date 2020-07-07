@@ -49,10 +49,10 @@ namespace AskQ.Controllers
                 questionsViewModel.Add(new QuestionViewModel
                 {
                     Id = question.Id,
-                    QuestionText = question.QuestionText,
+                    QuestionText = question.Text,
                     AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
-                    DateTime = question.DateTime,
-                    Replies = question.Replies.Select(r => r.ReplyText)
+                    DateTime = question.Date,
+                    Replies = question.Replies.Select(r => r.Text)
                 });
             }
 

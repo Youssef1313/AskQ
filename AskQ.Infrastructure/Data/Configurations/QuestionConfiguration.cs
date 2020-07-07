@@ -13,6 +13,9 @@ namespace AskQ.Infrastructure.Data.Configurations
         {
             builder.ToTable(nameof(Question));
 
+            builder.Metadata.FindNavigation(nameof(Question.Replies))
+                .SetPropertyAccessMode(PropertyAccessMode.Field);
+
             builder.HasKey(x => x.Id);
         }
     }

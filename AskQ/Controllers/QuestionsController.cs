@@ -45,7 +45,7 @@ namespace AskQ.Controllers
             {
                 AskedToGuid = receivingId,
                 AskedFromGuid = askedFromGuid,
-                QuestionText = questionText,
+                Text = questionText,
                 DateTime = DateTime.UtcNow,
                 Replies = Enumerable.Empty<Reply>()
             };
@@ -74,9 +74,9 @@ namespace AskQ.Controllers
                 questionsViewModel.Add(new QuestionViewModel
                 {
                     Id = question.Id,
-                    QuestionText = question.QuestionText,
+                    QuestionText = question.Text,
                     AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
-                    DateTime = question.DateTime,
+                    DateTime = question.Date,
                 });
             }
 
@@ -106,9 +106,9 @@ namespace AskQ.Controllers
             return View(new QuestionViewModel
             {
                 Id = question.Id,
-                QuestionText = question.QuestionText,
+                QuestionText = question.Text,
                 AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromGuid))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
-                DateTime = question.DateTime,
+                DateTime = question.Date,
             });
         }
 
@@ -140,10 +140,10 @@ namespace AskQ.Controllers
 
             await _dbContext.Replies.AddAsync(new Reply
             {
-                UserGuid = question.AskedToGuid,
+                UserId = question.AskedToGuid,
                 Question = question,
-                ReplyText = answerText,
-                DateTime = DateTime.UtcNow
+                Text = answerText,
+                Date = DateTime.UtcNow
             });
             await _dbContext.SaveChangesAsync();
             return RedirectToAction("UserProfile", "User", new { username = User.Identity.Name });
