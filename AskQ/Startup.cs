@@ -1,4 +1,4 @@
-using AskQ.Data;
+using AskQ.Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
