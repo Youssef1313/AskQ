@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace AskQ.Infrastructure.Data
+namespace AskQ.Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser
     {

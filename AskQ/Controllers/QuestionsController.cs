@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Core.Entities;
 using AskQ.Infrastructure.Data;
+using AskQ.Infrastructure.Identity;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,11 @@ namespace AskQ.Controllers
 {
     public class QuestionsController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly AppIdentityDbContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public QuestionsController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public QuestionsController(AppIdentityDbContext dbContext, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _dbContext = dbContext;
             _userManager = userManager;
