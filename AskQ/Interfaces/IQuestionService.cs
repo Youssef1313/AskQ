@@ -8,9 +8,9 @@ namespace AskQ.Interfaces
     public interface IQuestionService
     {
         Task<QuestionViewModel> GetQuestionAsync(int questionId);
-        Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId);
-        Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, int page, int pagesize);
+        Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, bool hasReplies);
+        Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, int page, int pagesize, bool hasReplies);
         Task CreateQuestionAsync(string text, ApplicationUser toUser, ApplicationUser? fromUser);
-        Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser toUser);
+        Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser replyWriter);
     }
 }

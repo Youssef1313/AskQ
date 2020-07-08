@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Core.Entities;
@@ -32,25 +31,25 @@ namespace AskQ.Services
             return GetQuestionViewModel(question);
         }
 
-        public async Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId)
+        public async Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, bool hasReplies)
         {
             List<Question> questions = await _dbContext.Questions
                                             .Include(q => q.Replies)
-                                            .Where(q => q.AskedToUserId == userId && q.HasReplies)
+                                            .Where(q => q.AskedToUserId == userId && q.HasReplies == hasReplies)
                                             .OrderByDescending(q => q.Date)
                                             .ToListAsync();
 
             return GetQuestionsViewModel(questions);
         }
 
-        public async Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, int page, int pagesize)
+        public async Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, int page, int pagesize, bool hasReplies)
         {
             // Separate pagination model could be defined. All appropriate validations should be done to convert page and pagesize to "take" and "skip".
             // Example, what is page argument is negative, what if zero. What if I request pagesize of 1000?
 
             List<Question> questions = await _dbContext.Questions
                                             .Include(q => q.Replies)
-                                            .Where(q => q.AskedToUserId == userId && q.HasReplies)
+                                            .Where(q => q.AskedToUserId == userId && q.HasReplies == hasReplies)
                                             .Skip(pagesize * (page - 1))
                                             .Take(pagesize)
                                             .OrderByDescending(q => q.Date)
@@ -70,7 +69,7 @@ namespace AskQ.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser toUser)
+        public async Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser replyWriter)
         {
             Question? question = await _dbContext.Questions
                                             .Include(q => q.Replies)
@@ -78,7 +77,7 @@ namespace AskQ.Services
 
             PozValidate.For.NotFound(questionId, question, nameof(question));
 
-            var reply = new Reply(answerText, toUser.Id, toUser.UserName);
+            var reply = new Reply(answerText, replyWriter.Id, replyWriter.UserName);
             question.AddReply(reply);
 
             await _dbContext.SaveChangesAsync();
@@ -103,9 +102,9 @@ namespace AskQ.Services
             var questionViewModel = new QuestionViewModel()
             {
                 Id = question.Id,
-                QuestionText = question.Text,
+                Text = question.Text,
                 AskedFromUsername = question.AskedFromUsername,
-                DateTime = question.Date,
+                Date = question.Date,
                 Replies = question.Replies.Select(r => r.Text)
             };
 

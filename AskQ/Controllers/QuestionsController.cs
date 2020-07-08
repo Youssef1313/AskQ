@@ -1,29 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AskQ.Core.Entities;
-using AskQ.Infrastructure.Data;
 using AskQ.Infrastructure.Identity;
 using AskQ.Interfaces;
 using AskQ.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AskQ.Controllers
 {
     public class QuestionsController : Controller
     {
-        private readonly AppDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IQuestionService _questionService;
 
-        public QuestionsController(AppDbContext dbContext,
-                                   UserManager<ApplicationUser> userManager,
-                                   IQuestionService questionService)
+        public QuestionsController(UserManager<ApplicationUser> userManager, IQuestionService questionService)
         {
-            _dbContext = dbContext;
             _userManager = userManager;
             _questionService = questionService;
         }
@@ -60,7 +52,7 @@ namespace AskQ.Controllers
 
             string authenticatedUserId = (await _userManager.GetUserAsync(User)).Id;
 
-            List<QuestionViewModel> questions = await _questionService.GetQuestionsForUserAsync(authenticatedUserId);
+            List<QuestionViewModel> questions = await _questionService.GetQuestionsForUserAsync(authenticatedUserId, hasReplies: false);
 
             return View(questions.AsEnumerable());
         }
@@ -72,25 +64,22 @@ namespace AskQ.Controllers
             {
                 return Forbid();
             }
-            Question? question = await _dbContext.Questions.Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
+            string userId = (await _userManager.GetUserAsync(User)).Id;
+            QuestionViewModel? question =
+                (await _questionService.GetQuestionsForUserAsync(userId, hasReplies: false)).FirstOrDefault(q => q.Id == id); // TODO: Need try/catch in case not found??
+            // TODO: Check if it is okay if the service return the Model, and have extension methods to convert to ViewModel. It'll be easier.
+
             if (question == null)
             {
                 return NotFound();
             }
-            if (question.AskedToUserId != (await _userManager.GetUserAsync(User)).Id)
-            {
-                return Forbid();
-            }
-            if (question.Replies.Any())
-            {
-                return BadRequest();
-            }
+
             return View(new QuestionViewModel
             {
                 Id = question.Id,
-                QuestionText = question.Text,
-                AskedFromUsername = (await _userManager.FindByIdAsync(question.AskedFromUserId))?.UserName, // Since we need username all the time, we can keep guid and username in Question.
-                DateTime = question.Date,
+                Text = question.Text,
+                AskedFromUsername = question.AskedFromUsername, // Since we need username all the time, we can keep guid and username in Question.
+                Date = question.Date,
             });
         }
 
@@ -105,31 +94,18 @@ namespace AskQ.Controllers
             {
                 return Forbid();
             }
-            Question? question = await _dbContext.Questions.Include(q => q.Replies).FirstOrDefaultAsync(q => q.Id == id);
+
+            string userId = (await _userManager.GetUserAsync(User)).Id;
+            QuestionViewModel? question =
+                (await _questionService.GetQuestionsForUserAsync(userId, hasReplies: false)).FirstOrDefault(q => q.Id == id);
+
             if (question == null)
             {
                 return NotFound();
             }
 
-            if (question.AskedToUserId != (await _userManager.GetUserAsync(User)).Id)
-            {
-                return Forbid();
-            }
-            if (question.Replies.Any())
-            {
-                return BadRequest();
-            }
-
-            /*await _dbContext.Replies.AddAsync(new Reply
-            {
-                UserId = question.AskedToGuid,
-                Question = question,
-                Text = answerText,
-                Date = DateTime.UtcNow
-            });
-            await _dbContext.SaveChangesAsync();*/
-            // TODO: ReplyService.
-
+            ApplicationUser replyWriter = await _userManager.GetUserAsync(User);
+            await _questionService.AnswerQuestionAsync(id, answerText, replyWriter);
             return RedirectToAction("UserProfile", "User", new { username = User.Identity.Name });
         }
     }

@@ -17,11 +17,11 @@
         {
             <a href="#">@Model.AskedFromUsername</a>// TODO: Real href.
         }
-        | at @Model.DateTime
+        | at @Model.Date
     </div>
     <div class="card-body">
         <blockquote class="blockquote mb-0">
-            <p>@Model.QuestionText</p>
+            <p>@Model.Text</p>
             <form asp-controller="Questions" asp-action="Answer" class="mb-3">
                 <div class="form-group">
                     <label for="AnswerText">Answer:</label>

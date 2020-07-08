@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Infrastructure.Identity;
 using AskQ.Interfaces;
@@ -30,7 +31,7 @@ namespace AskQ.Controllers
                 return NotFound();
             }
 
-            var questions = await _questionService.GetQuestionsForUserAsync(user.Id, page, 10);
+            List<QuestionViewModel> questions = await _questionService.GetQuestionsForUserAsync(user.Id, page, 10, hasReplies: true);
 
             var viewModel = new UserProfileViewModel
             {
