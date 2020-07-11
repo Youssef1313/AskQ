@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Core.Entities;
@@ -77,7 +78,7 @@ namespace AskQ.Services
 
             PozValidate.For.NotFound(questionId, question, nameof(question));
 
-            var reply = new Reply(answerText, replyWriter.Id, replyWriter.UserName);
+            var reply = new Reply(answerText, replyWriter.Id, replyWriter.UserName, DateTime.Now);
             question.AddReply(reply);
 
             await _dbContext.SaveChangesAsync();

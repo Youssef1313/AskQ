@@ -21,13 +21,14 @@ namespace AskQ.Core.Entities
             // Parameterless constructor is required by EF. Will make it private.
         }
 
-        public Reply(string text, string? userId, string? username)
+        public Reply(string text, string? userId, string? username, DateTime date)
         {
             PozValidate.For.NullOrEmpty(text, nameof(text));
 
             Text = text;
             UserId = userId;
             UserName = username;
+            Date = date;
         }
     }
 }
