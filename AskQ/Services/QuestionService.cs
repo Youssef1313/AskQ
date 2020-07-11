@@ -99,16 +99,8 @@ namespace AskQ.Services
 
         private QuestionViewModel GetQuestionViewModel(Question question)
         {
-            var questionViewModel = new QuestionViewModel()
-            {
-                Id = question.Id,
-                Text = question.Text,
-                AskedFromUsername = question.AskedFromUsername,
-                Date = question.Date,
-                Replies = question.Replies.Select(r => r.Text)
-            };
-
-            return questionViewModel;
+            return new QuestionViewModel(
+                question.Id, question.AskedFromUsername, question.Text, question.Date, question.Replies.Select(r => r.Text));
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AskQ.Infrastructure.Identity;
 using AskQ.Interfaces;
@@ -33,13 +32,7 @@ namespace AskQ.Controllers
 
             List<QuestionViewModel> questions = await _questionService.GetQuestionsForUserAsync(user.Id, page, 10, hasReplies: true);
 
-            var viewModel = new UserProfileViewModel
-            {
-                PageNumber = page,
-                Username = username,
-                UserId = user.Id,
-                Questions = questions.AsEnumerable()
-            };
+            var viewModel = new UserProfileViewModel(page, username, user.Id, questions);
             return View(viewModel);
         }
     }

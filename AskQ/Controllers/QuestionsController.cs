@@ -74,13 +74,7 @@ namespace AskQ.Controllers
                 return NotFound();
             }
 
-            return View(new QuestionViewModel
-            {
-                Id = question.Id,
-                Text = question.Text,
-                AskedFromUsername = question.AskedFromUsername, // Since we need username all the time, we can keep guid and username in Question.
-                Date = question.Date,
-            });
+            return View(question);
         }
 
         [HttpPost]
