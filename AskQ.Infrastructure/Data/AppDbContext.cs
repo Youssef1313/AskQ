@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AskQ.Core.Entities;
+﻿using AskQ.Core.Entities;
 using AskQ.Infrastructure.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,8 +10,8 @@ namespace AskQ.Infrastructure.Data
         {
         }
 
-        public DbSet<Question> Questions { get; set; }
-        public DbSet<Reply> Replies { get; set; }
+        public DbSet<Question> Questions { get; set; } = null!;
+        public DbSet<Reply> Replies { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
