@@ -15,7 +15,7 @@
         }
         else
         {
-            <a href="#">@Model.AskedFromUsername</a>// TODO: Real href.
+            <a asp-controller="User" asp-action="UserProfile" asp-route-id="@Model.AskedFromUsername">@Model.AskedFromUsername</a>
         }
         | at @Model.Date
     </div>
