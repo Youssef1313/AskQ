@@ -4,7 +4,14 @@
     ViewData["Title"] = "Received Questions";
 }
 
-<h1>Unanswered received questions</h1>
+@if (!Model.Any())
+{
+    <h1>You don't have any unanswered received questions!</h1>
+}
+else
+{
+    <h1>Unanswered received questions</h1>
+}
 
 
 @foreach (QuestionViewModel question in Model)
