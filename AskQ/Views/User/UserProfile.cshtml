@@ -50,9 +50,10 @@ else
                 }
                 else
                 {
-                    <a asp-controller="User" asp-action="UserProfile" asp-route-id="@question.AskedFromUsername">@question.AskedFromUsername</a>
+                    <a asp-controller="User" asp-action="UserProfile" asp-route-username="@question.AskedFromUsername">@question.AskedFromUsername</a>
                 }
                 | at @question.Date
+                <a class="float-right" asp-controller="Questions" asp-action="Reply" asp-route-id="@question.Id">Reply</a>
             </div>
             <div class="card-body">
                 <blockquote class="blockquote mb-0">

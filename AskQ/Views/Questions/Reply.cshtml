@@ -1,10 +1,10 @@
-﻿@model QuestionViewModel
+@model QuestionViewModel
 
 @{
-    ViewData["Title"] = "Answer";
+    ViewData["Title"] = "Reply";
 }
 
-<h1>Answering question</h1>
+<h1>Replying to question</h1>
 
 <div class="card m-3">
     <div class="card-header">
@@ -22,10 +22,10 @@
     <div class="card-body">
         <blockquote class="blockquote mb-0">
             <p>@Model.Text</p>
-            <form asp-controller="Questions" asp-action="Answer" class="mb-3">
+            <form asp-controller="Questions" asp-action="Reply" class="mb-3">
                 <div class="form-group">
-                    <label for="AnswerText">Answer:</label>
-                    <textarea class="form-control" id="AnswerText" name="AnswerText" for="AnswerText"></textarea>
+                    <label for="ReplyText">Answer:</label>
+                    <textarea class="form-control" id="ReplyText" name="ReplyText" for="ReplyText"></textarea>
                 </div>
                 <div class="text-right">
                     <button type="submit" class="btn btn-primary">Send answer</button>

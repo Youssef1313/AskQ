@@ -91,16 +91,41 @@ namespace AskQ.Controllers
 
             string userId = (await _userManager.GetUserAsync(User)).Id;
             QuestionViewModel? question =
-                (await _questionService.GetQuestionsForUserAsync(userId, hasReplies: false)).FirstOrDefault(q => q.Id == id);
+                (await _questionService.GetQuestionsForUserAsync(userId, hasReplies: false)).FirstOrDefault(q => q.Id == id); // TODO: get by id directly??
 
             if (question == null)
             {
                 return NotFound();
             }
 
-            ApplicationUser replyWriter = await _userManager.GetUserAsync(User);
+            ApplicationUser replyWriter = await _userManager.GetUserAsync(User); // TODO: GetUserAsync already called before. Re-use the value
             await _questionService.AnswerQuestionAsync(id, answerText, replyWriter);
             return RedirectToAction("UserProfile", "User", new { username = User.Identity.Name });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReplyAsync(int id)
+        {
+            QuestionViewModel question = await _questionService.GetQuestionAsync(id); // throws if not found.
+            return View(question);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReplyAsync(int id, string replyText)
+        {
+            if (string.IsNullOrWhiteSpace(replyText))
+            {
+                return BadRequest();
+            }
+            QuestionViewModel question = await _questionService.GetQuestionAsync(id); // throws exception if not found.
+            if (!question.Replies.Any())
+            {
+                return BadRequest(); // A question without any replies should first have an answer, then have replies.
+            }
+
+            ApplicationUser replyWriter = await _userManager.GetUserAsync(User);
+            await _questionService.AnswerQuestionAsync(id, replyText, replyWriter);
+            return Ok(); // TODO: Redirect to a question view.
         }
     }
 }
