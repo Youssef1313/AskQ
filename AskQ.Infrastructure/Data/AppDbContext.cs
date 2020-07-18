@@ -10,8 +10,8 @@ namespace AskQ.Infrastructure.Data
         {
         }
 
-        public DbSet<Question> Questions { get; set; } = null!;
-        public DbSet<Reply> Replies { get; set; } = null!;
+        public DbSet<Question> Questions => Set<Question>();
+        public DbSet<Reply> Replies => Set<Reply>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
