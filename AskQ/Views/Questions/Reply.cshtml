@@ -24,11 +24,11 @@
             <p>@Model.Text</p>
             <form asp-controller="Questions" asp-action="Reply" class="mb-3">
                 <div class="form-group">
-                    <label for="ReplyText">Answer:</label>
+                    <label for="ReplyText">Reply:</label>
                     <textarea class="form-control" id="ReplyText" name="ReplyText" for="ReplyText"></textarea>
                 </div>
                 <div class="text-right">
-                    <button type="submit" class="btn btn-primary">Send answer</button>
+                    <button type="submit" class="btn btn-primary">Add reply</button>
                 </div>
                 <input type="hidden" name="id" value="@Model.Id" />
             </form>
