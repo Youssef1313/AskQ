@@ -125,7 +125,14 @@ namespace AskQ.Controllers
 
             ApplicationUser replyWriter = await _userManager.GetUserAsync(User);
             await _questionService.AnswerQuestionAsync(id, replyText, replyWriter);
-            return Ok(); // TODO: Redirect to a question view.
+            return RedirectToAction("Details", new { id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DetailsAsync(int id)
+        {
+            QuestionViewModel question = await _questionService.GetQuestionAsync(id); // throws exception if not found.
+            return View(question);
         }
     }
 }

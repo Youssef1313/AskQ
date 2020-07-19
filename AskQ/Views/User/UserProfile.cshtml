@@ -53,12 +53,13 @@ else
                     <a asp-controller="User" asp-action="UserProfile" asp-route-username="@question.AskedFromUsername">@question.AskedFromUsername</a>
                 }
                 | at @question.Date
-                <a class="float-right" asp-controller="Question" asp-action="Reply" asp-route-id="@question.Id">Reply</a>
+                <a class="float-right ml-3" asp-controller="Question" asp-action="Reply" asp-route-id="@question.Id">Reply</a>
+                <a class="float-right" asp-controller="Question" asp-action="Details" asp-route-id="@question.Id">View all replies (@question.Replies.Count())</a>
             </div>
             <div class="card-body">
                 <blockquote class="blockquote mb-0">
                     <p>@question.Text</p>
-                    <footer class="blockquote-footer">@question.Replies.First()</footer>
+                    <footer class="blockquote-footer">@question.Replies.First()</footer> @*TODO: Show reply time as well.*@
                 </blockquote>
             </div>
         </div>
