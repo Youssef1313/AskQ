@@ -14,7 +14,7 @@
 {
     <h1>Ask @Model.Username</h1>
 
-    <form asp-controller="Questions" asp-action="Post" class="mb-3">
+    <form asp-controller="Question" asp-action="Post" class="mb-3">
         <div class="form-group">
             <label for="QuestionText">Question</label>
             <textarea class="form-control" id="QuestionText" name="QuestionText" for="QuestionText"></textarea>
@@ -53,7 +53,7 @@ else
                     <a asp-controller="User" asp-action="UserProfile" asp-route-username="@question.AskedFromUsername">@question.AskedFromUsername</a>
                 }
                 | at @question.Date
-                <a class="float-right" asp-controller="Questions" asp-action="Reply" asp-route-id="@question.Id">Reply</a>
+                <a class="float-right" asp-controller="Question" asp-action="Reply" asp-route-id="@question.Id">Reply</a>
             </div>
             <div class="card-body">
                 <blockquote class="blockquote mb-0">

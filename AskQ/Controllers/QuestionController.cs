@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AskQ.Controllers
 {
-    public class QuestionsController : Controller
+    public class QuestionController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IQuestionService _questionService;
 
-        public QuestionsController(UserManager<ApplicationUser> userManager, IQuestionService questionService)
+        public QuestionController(UserManager<ApplicationUser> userManager, IQuestionService questionService)
         {
             _userManager = userManager;
             _questionService = questionService;
