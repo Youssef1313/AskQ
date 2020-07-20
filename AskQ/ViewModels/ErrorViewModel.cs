@@ -2,7 +2,9 @@ namespace AskQ.ViewModels
 {
     public class ErrorViewModel
     {
-        public string RequestId { get; set; } = null!;
+        public ErrorViewModel(string requestId) => RequestId = requestId ?? throw new ArgumentNullException(nameof(requestId));
+
+        public string RequestId { get; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
