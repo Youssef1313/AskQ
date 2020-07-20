@@ -1,3 +1,5 @@
+using System;
+
 namespace AskQ.ViewModels
 {
     public class ErrorViewModel
