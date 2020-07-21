@@ -11,6 +11,6 @@ namespace AskQ.Interfaces
         Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, bool hasReplies);
         Task<List<QuestionViewModel>> GetQuestionsForUserAsync(string userId, int page, int pagesize, bool hasReplies);
         Task CreateQuestionAsync(string text, ApplicationUser toUser, ApplicationUser? fromUser);
-        Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser replyWriter);
+        Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser? replyWriter);
     }
 }

@@ -70,7 +70,7 @@ namespace AskQ.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser replyWriter)
+        public async Task<QuestionViewModel> AnswerQuestionAsync(int questionId, string answerText, ApplicationUser? replyWriter)
         {
             Question? question = await _dbContext.Questions
                                             .Include(q => q.Replies)
@@ -78,7 +78,7 @@ namespace AskQ.Services
 
             PozValidate.For.NotFound(questionId, question, nameof(question));
 
-            var reply = new Reply(answerText, replyWriter.Id, replyWriter.UserName, DateTime.Now);
+            var reply = new Reply(answerText, replyWriter?.Id, replyWriter?.UserName, DateTime.UtcNow);
             question.AddReply(reply);
 
             await _dbContext.SaveChangesAsync();

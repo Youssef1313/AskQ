@@ -123,7 +123,7 @@ namespace AskQ.Controllers
                 return BadRequest(); // A question without any replies should first have an answer, then have replies.
             }
 
-            ApplicationUser replyWriter = await _userManager.GetUserAsync(User);
+            ApplicationUser? replyWriter = await _userManager.GetUserAsync(User);
             await _questionService.AnswerQuestionAsync(id, replyText, replyWriter);
             return RedirectToAction("Details", new { id });
         }
