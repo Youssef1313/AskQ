@@ -4,35 +4,28 @@
     ViewData["Title"] = "View";
 }
 
-<h1>View</h1>
+<div class="card m-3">
+    <div class="card-header">
+        Asked by:
+        @if (Model.AskedFromUsername is null)
+        {
+            <span>anonymous user</span>
+        }
+        else
+        {
+            <a asp-controller="User" asp-action="UserProfile" asp-route-username="@Model.AskedFromUsername">@Model.AskedFromUsername</a>
+        }
+        | at @Model.Date
+        <a class="float-right" asp-controller="Question" asp-action="Reply" asp-route-id="@Model.Id">Reply</a>
+    </div>
+    <div class="card-body">
+        <blockquote class="blockquote mb-0">
+            <p>@Model.Text</p>
+            @foreach (string reply in Model.Replies)
+            {
+                <footer class="blockquote-footer">@reply</footer> @*TODO: Show reply time as well.*@
+            }
 
-<div>
-    <h4>QuestionViewModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AskedFromUsername)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AskedFromUsername)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Text)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Text)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-    </dl>
+        </blockquote>
+    </div>
 </div>
