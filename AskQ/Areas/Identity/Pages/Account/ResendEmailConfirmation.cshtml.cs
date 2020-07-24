@@ -24,6 +24,9 @@ namespace AskQ.Areas.Identity.Pages.Account
         {
             _userManager = userManager;
             _emailSender = emailSender;
+
+            // TODO: The following might not be the best way to silence the nullable warnings.
+            Input = null!;
         }
 
         [BindProperty]
@@ -31,6 +34,12 @@ namespace AskQ.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            public InputModel()
+            {
+                // TODO: The following might not be the best way to silence the nullable warnings.
+                Email = null!;
+            }
+
             [Required]
             [EmailAddress]
             public string Email { get; set; }
