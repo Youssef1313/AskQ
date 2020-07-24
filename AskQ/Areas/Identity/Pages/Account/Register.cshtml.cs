@@ -35,6 +35,10 @@ namespace AskQ.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+
+            // TODO: The following is not the ideal solution to silence the warnings.
+            Input = null!;
+            ExternalLogins = null!;
         }
 
         [BindProperty]
@@ -46,6 +50,14 @@ namespace AskQ.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            public InputModel()
+            {
+                // TODO: The following is not the ideal solution to silence the warnings.
+                Email = null!;
+                Password = null!;
+                ConfirmPassword = null!;
+            }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
