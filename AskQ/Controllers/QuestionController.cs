@@ -45,7 +45,7 @@ namespace AskQ.Controllers
         [HttpGet]
         public async Task<IActionResult> ReceivedAsync()
         {
-            if (!User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated != true)
             {
                 return BadRequest();
             }
@@ -60,7 +60,7 @@ namespace AskQ.Controllers
         [HttpGet]
         public async Task<IActionResult> AnswerAsync(int id)
         {
-            if (!User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated != true)
             {
                 return Forbid();
             }
@@ -84,7 +84,7 @@ namespace AskQ.Controllers
             {
                 return BadRequest();
             }
-            if (!User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated != true)
             {
                 return Forbid();
             }
